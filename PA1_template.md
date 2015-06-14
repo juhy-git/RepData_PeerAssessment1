@@ -5,20 +5,32 @@ output: html_document
 
 ## Loading and preprocessing the data
 
-```{r, echo = TRUE}
+
+```r
 activity <- read.csv("activity.csv")
 activity$date <- as.Date(activity$date, "%Y-%m-%d")
 
 library(ggplot2)
 library(grid)
 library(gridExtra)
+```
 
+```
+## Warning: package 'gridExtra' was built under R version 3.1.3
+```
+
+```r
 Sys.setlocale("LC_TIME", "C")
+```
+
+```
+## [1] "C"
 ```
 
 ## What is mean total number of steps taken per day?
 
-```{r, echo=TRUE, fig.width = 10}
+
+```r
 x_sum <- tapply(activity$steps, activity$date, sum)
 sum_data <- data.frame(row = seq_len(nrow(x_sum)), date = names(x_sum), sum = as.numeric(x_sum))
 sum_data[is.na(sum_data)] <- 0
@@ -32,13 +44,16 @@ ggplot(sum_data, aes(x=date, y=sum)) +
     theme(axis.title.x = element_blank(), axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-The **mean** of the total number of steps taken per day is **`r steps_mean`**.
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png) 
 
-The **median** of the total number of steps taken per day is **`r steps_median`**.
+The **mean** of the total number of steps taken per day is **9354.2295082**.
+
+The **median** of the total number of steps taken per day is **1.0395 &times; 10<sup>4</sup>**.
 
 ## What is the average daily activity pattern?
 
-```{r, echo = TRUE, fig.width = 10}
+
+```r
 x5 <- tapply(activity$steps, activity$interval, mean, na.rm = TRUE)
 x5_data <- data.frame(row = seq_len(nrow(x5)), interval = names(x5), mean = as.numeric(x5))
 
@@ -53,22 +68,26 @@ ggplot(x5_data, aes(x=row, y=mean)) +
                                 "15:00", "18:00", "21:00", "24:00"))
 ```
 
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
 
-5-minute interval **`r names(x5_max)`** contains the maximum number of steps.
+
+5-minute interval **835** contains the maximum number of steps.
 
 ## Imputing missing values
 
-```{r, echo = TRUE}
+
+```r
 na_act <- is.na(activity)
 na_act <- as.data.frame(na_act)
 na_total <- nrow(subset(na_act, steps == TRUE))
 ```
 
-The total number of missing values in the dataset = **`r na_total`**.
+The total number of missing values in the dataset = **2304**.
 
 Creating a new dataset that is equal to the original dataset but with the missing data filled in. The strategy for filling is the mean for that 5-minute interval.
 
-```{r, echo = TRUE, fig.width = 10}
+
+```r
 new_activity <- activity
 for(i in 1:17568) {
     if(is.na(new_activity$steps[i])) {
@@ -88,13 +107,16 @@ ggplot(nsum_data, aes(x=date, y=sum)) +
     theme(axis.title.x = element_blank(), axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-The **mean** of the total number of steps taken per day is **`r new_steps_mean`**.
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
 
-The **median** of the total number of steps taken per day is **`r new_steps_median`**.
+The **mean** of the total number of steps taken per day is **1.0766189 &times; 10<sup>4</sup>**.
+
+The **median** of the total number of steps taken per day is **1.0766189 &times; 10<sup>4</sup>**.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r, echo = TRUE, fig.width = 10}
+
+```r
 new_activity$weekday <- weekdays(new_activity$date)
 
 for(i in 1:17568) {
@@ -136,3 +158,5 @@ p2 <- ggplot(wx5_enddata, aes(x=row, y=mean)) +
 
 grid.arrange(p1, p2, ncol = 1)
 ```
+
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png) 
