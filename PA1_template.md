@@ -11,6 +11,13 @@ activity <- read.csv("activity.csv")
 activity$date <- as.Date(activity$date, "%Y-%m-%d")
 
 library(ggplot2)
+```
+
+```
+## Warning: package 'ggplot2' was built under R version 3.1.3
+```
+
+```r
 library(grid)
 library(gridExtra)
 ```
@@ -33,22 +40,25 @@ Sys.setlocale("LC_TIME", "C")
 ```r
 x_sum <- tapply(activity$steps, activity$date, sum)
 sum_data <- data.frame(row = seq_len(nrow(x_sum)), date = names(x_sum), sum = as.numeric(x_sum))
-sum_data[is.na(sum_data)] <- 0
 
 steps_mean <- mean(sum_data$sum, na.rm = TRUE)
 steps_median <- median(sum_data$sum, na.rm = TRUE)
 
-ggplot(sum_data, aes(x=date, y=sum)) +
-    geom_bar(stat="identity") +
-    ylab("Number of steps") +
-    theme(axis.title.x = element_blank(), axis.text.x = element_text(angle = 45, hjust = 1))
+ggplot(data = na.omit(sum_data), aes(x=sum)) +
+    geom_histogram(aes(y = ..density..)) +
+    geom_density() + 
+    xlab("The total number of steps taken each day")
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
 ```
 
 ![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png) 
 
-The **mean** of the total number of steps taken per day is **9354.2295082**.
+The **mean** of the total number of steps taken per day is **1.0766189 &times; 10<sup>4</sup>**.
 
-The **median** of the total number of steps taken per day is **1.0395 &times; 10<sup>4</sup>**.
+The **median** of the total number of steps taken per day is **1.0765 &times; 10<sup>4</sup>**.
 
 ## What is the average daily activity pattern?
 
@@ -140,7 +150,7 @@ wx5_enddata <- data.frame(row = seq_len(nrow(wx5_end)), interval = names(wx5_end
 
 p1 <- ggplot(wx5_daydata, aes(x=row, y=mean)) +
     geom_line(stat="identity") +
-    ylab("Number of steps") +
+    ylab("Number of steps") + xlab(" ") +
     ggtitle("Weekday") +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     scale_x_continuous(breaks=c(1,37,73,109,145,181,217,253,289),
@@ -149,7 +159,7 @@ p1 <- ggplot(wx5_daydata, aes(x=row, y=mean)) +
 
 p2 <- ggplot(wx5_enddata, aes(x=row, y=mean)) +
     geom_line(stat="identity") +
-    ylab("Number of steps") +
+    ylab("Number of steps") + xlab(" ") +
     ggtitle("Weekend") +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     scale_x_continuous(breaks=c(1,37,73,109,145,181,217,253,289),

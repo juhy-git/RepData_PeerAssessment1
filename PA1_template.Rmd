@@ -21,15 +21,14 @@ Sys.setlocale("LC_TIME", "C")
 ```{r, echo=TRUE, fig.width = 10}
 x_sum <- tapply(activity$steps, activity$date, sum)
 sum_data <- data.frame(row = seq_len(nrow(x_sum)), date = names(x_sum), sum = as.numeric(x_sum))
-sum_data[is.na(sum_data)] <- 0
 
 steps_mean <- mean(sum_data$sum, na.rm = TRUE)
 steps_median <- median(sum_data$sum, na.rm = TRUE)
 
-ggplot(sum_data, aes(x=date, y=sum)) +
-    geom_bar(stat="identity") +
-    ylab("Number of steps") +
-    theme(axis.title.x = element_blank(), axis.text.x = element_text(angle = 45, hjust = 1))
+ggplot(data = na.omit(sum_data), aes(x=sum)) +
+    geom_histogram(aes(y = ..density..)) +
+    geom_density() + 
+    xlab("The total number of steps taken each day")
 ```
 
 The **mean** of the total number of steps taken per day is **`r steps_mean`**.
@@ -118,7 +117,7 @@ wx5_enddata <- data.frame(row = seq_len(nrow(wx5_end)), interval = names(wx5_end
 
 p1 <- ggplot(wx5_daydata, aes(x=row, y=mean)) +
     geom_line(stat="identity") +
-    ylab("Number of steps") +
+    ylab("Number of steps") + xlab(" ") +
     ggtitle("Weekday") +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     scale_x_continuous(breaks=c(1,37,73,109,145,181,217,253,289),
@@ -127,7 +126,7 @@ p1 <- ggplot(wx5_daydata, aes(x=row, y=mean)) +
 
 p2 <- ggplot(wx5_enddata, aes(x=row, y=mean)) +
     geom_line(stat="identity") +
-    ylab("Number of steps") +
+    ylab("Number of steps") + xlab(" ") +
     ggtitle("Weekend") +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     scale_x_continuous(breaks=c(1,37,73,109,145,181,217,253,289),
